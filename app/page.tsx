@@ -34,7 +34,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import { adminStats, chartData, driver, history, ride } from "@/lib/mock-data";
@@ -79,23 +79,25 @@ export default function Page() {
   const [mode, setMode] = useState<Mode>("customer");
 
   return (
-    <main className="min-h-screen premium-noise">
-      <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-4 py-5 md:px-8">
-        <header className="flex items-center justify-between">
+    <main className="app-screen min-h-screen premium-noise">
+      <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-3 px-0 py-0 sm:gap-6 sm:px-4 sm:py-5 md:px-8">
+        <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-line/70 bg-white/92 px-3 py-2 backdrop-blur-xl sm:static sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-0">
           <div className="flex items-center gap-3">
-            <Logo />
-            <div>
+            <div className="scale-90 sm:scale-100">
+              <Logo />
+            </div>
+            <div className="min-w-0">
               <p className="text-sm font-bold text-charcoal">PingRide</p>
-              <p className="text-xs text-graphite/70">WhatsApp-first mobility prototype</p>
+              <p className="hidden text-xs text-graphite/70 min-[390px]:block">WhatsApp-first mobility prototype</p>
             </div>
           </div>
-          <div className="flex rounded-full border border-line bg-white p-1 shadow-sm">
+          <div className="flex shrink-0 rounded-full border border-line bg-white p-1 shadow-sm">
             {(["customer", "driver", "admin"] as Mode[]).map((item) => (
               <button
                 key={item}
                 onClick={() => setMode(item)}
                 className={cn(
-                  "rounded-full px-4 py-2 text-xs font-bold capitalize transition",
+                  "rounded-full px-2.5 py-2 text-[11px] font-bold capitalize transition sm:px-4 sm:text-xs",
                   mode === item ? "bg-charcoal text-white" : "text-graphite hover:bg-mist",
                 )}
               >
@@ -180,13 +182,13 @@ function CustomerExperience() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
-      className="grid flex-1 place-items-center"
+      className="grid flex-1 place-items-stretch sm:place-items-center"
     >
-      <div className="relative w-full max-w-[410px] rounded-[46px] border border-black/10 bg-charcoal p-3 shadow-phone">
-        <div className="overflow-hidden rounded-[36px] bg-[#efe7db]">
-          <div className="relative h-[780px] max-h-[calc(100vh-130px)] min-h-[650px]">
+      <div className="relative h-[calc(100vh-58px)] w-full border-black/10 bg-charcoal shadow-none sm:h-auto sm:max-w-[410px] sm:rounded-[46px] sm:border sm:p-3 sm:shadow-phone">
+        <div className="h-full overflow-hidden bg-[#efe7db] sm:rounded-[36px]">
+          <div className="phone-screen relative h-full min-h-[620px] sm:h-[780px] sm:max-h-[calc(100vh-130px)] sm:min-h-[650px]">
             <PhoneTopBar />
-            <div ref={scrollRef} className="hide-scrollbar h-[calc(100%-74px)] overflow-y-auto bg-[#f4eee4] px-3 pb-5">
+            <div ref={scrollRef} className="hide-scrollbar h-[calc(100%-74px)] overflow-y-auto bg-[#f4eee4] px-3 pb-7">
               <AnimatePresence mode="wait">
                 {stage === "splash" ? (
                   <Splash key="splash" />
@@ -785,7 +787,7 @@ function ChatComposer({ onSend }: { onSend: () => void }) {
 
 function Toast({ text }: { text: string }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }} className="absolute bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-full bg-charcoal px-4 py-2 text-xs font-bold text-white shadow-premium">
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }} className="absolute bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-full bg-charcoal px-4 py-2 text-xs font-bold text-white shadow-premium">
       {text}
     </motion.div>
   );
@@ -803,9 +805,9 @@ function DriverExperience() {
   }, [rideState]);
 
   return (
-    <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} className="grid flex-1 gap-6 lg:grid-cols-[420px_1fr]">
-      <div className="rounded-[36px] bg-charcoal p-4 shadow-phone">
-        <div className="min-h-[720px] rounded-[28px] bg-[#FBFCFB] p-5">
+    <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} className="grid flex-1 gap-4 px-3 pb-4 sm:px-0 lg:grid-cols-[420px_1fr]">
+      <div className="rounded-[28px] bg-charcoal p-2 shadow-phone sm:rounded-[36px] sm:p-4">
+        <div className="min-h-[calc(100vh-116px)] rounded-[24px] bg-[#FBFCFB] p-4 sm:min-h-[720px] sm:rounded-[28px] sm:p-5">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-black">Driver App</p>
@@ -886,11 +888,11 @@ function AdminExperience() {
   const [section, setSection] = useState("Dashboard");
   const nav = ["Dashboard", "Drivers", "Customers", "Live Rides", "Revenue", "Analytics", "Payments", "Support", "KYC", "Settings"];
   return (
-    <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} className="grid flex-1 gap-4 rounded-[34px] bg-white p-4 shadow-phone lg:grid-cols-[240px_1fr]">
-      <aside className="rounded-[26px] bg-charcoal p-4 text-white">
+    <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} className="grid flex-1 gap-4 bg-white p-3 shadow-none sm:rounded-[34px] sm:p-4 sm:shadow-phone lg:grid-cols-[240px_1fr]">
+      <aside className="rounded-[24px] bg-charcoal p-4 text-white lg:rounded-[26px]">
         <Logo />
         <p className="mt-5 text-xl font-black">PingRide Ops</p>
-        <div className="mt-6 grid gap-1">
+        <div className="mt-6 grid max-h-64 grid-cols-2 gap-1 overflow-y-auto lg:max-h-none lg:grid-cols-1">
           {nav.map((item) => (
             <button key={item} onClick={() => setSection(item)} className={cn("flex items-center justify-between rounded-2xl px-3 py-3 text-left text-sm font-bold transition", section === item ? "bg-whatsapp text-charcoal" : "text-white/70 hover:bg-white/10")}>
               {item}

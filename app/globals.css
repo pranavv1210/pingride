@@ -14,6 +14,7 @@ html,
 body {
   min-height: 100%;
   background: #f5f8f6;
+  overflow-x: hidden;
 }
 
 body {
@@ -61,4 +62,14 @@ textarea {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+@supports (height: 100dvh) {
+  .app-screen {
+    min-height: 100dvh;
+  }
+
+  .phone-screen {
+    height: calc(100dvh - 86px);
+  }
 }

@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
   const challenge = searchParams.get("hub.challenge");
   const requestToken = searchParams.get("hub.verify_token");
 
-  if (mode === "subscribe" && challenge && requestToken === verifyToken) {
+  if (verifyToken && mode === "subscribe" && challenge && requestToken === verifyToken) {
     return new NextResponse(challenge, { status: 200 });
   }
 
@@ -93,7 +94,38 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json()) as WebhookBody;
+  const appSecret = process.env.WHATSAPP_APP_SECRET;
+  if (!appSecret) {
+    return NextResponse.json(
+      { error: "Webhook signature verification is not configured" },
+      { status: 503 },
+    );
+  }
+
+  const signature = request.headers.get("x-hub-signature-256");
+  if (!signature?.startsWith("sha256=")) {
+    return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 });
+  }
+
+  const rawBody = await request.text();
+  const signatureHex = signature.slice("sha256=".length);
+  if (!/^[a-f0-9]{64}$/i.test(signatureHex)) {
+    return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 });
+  }
+
+  const expectedSignature = createHmac("sha256", appSecret).update(rawBody).digest();
+  const receivedSignature = Buffer.from(signatureHex, "hex");
+  if (!timingSafeEqual(expectedSignature, receivedSignature)) {
+    return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 });
+  }
+
+  let body: WebhookBody;
+  try {
+    body = JSON.parse(rawBody) as WebhookBody;
+  } catch {
+    return NextResponse.json({ error: "Invalid webhook payload" }, { status: 400 });
+  }
+
   const messages =
     body.entry?.flatMap((entry) => entry.changes ?? []).flatMap((change) => change.value?.messages ?? []) ?? [];
 

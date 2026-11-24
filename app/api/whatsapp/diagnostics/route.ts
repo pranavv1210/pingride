@@ -4,16 +4,17 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID || "";
-  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN || "";
-  const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || "";
+  const hasAccessToken = Boolean(process.env.WHATSAPP_ACCESS_TOKEN);
+  const hasPhoneNumberId = Boolean(process.env.WHATSAPP_PHONE_NUMBER_ID);
+  const hasVerifyToken = Boolean(process.env.WHATSAPP_VERIFY_TOKEN);
+  const hasAppSecret = Boolean(process.env.WHATSAPP_APP_SECRET);
 
   return NextResponse.json({
-    ok: true,
+    ok: hasAccessToken && hasPhoneNumberId && hasVerifyToken && hasAppSecret,
     graphVersion: process.env.WHATSAPP_GRAPH_VERSION || "v23.0",
-    hasAccessToken: accessToken.length > 20,
-    accessTokenPrefix: accessToken ? accessToken.slice(0, 6) : null,
-    phoneNumberId,
-    verifyTokenMatchesExpected: verifyToken === "pingride-verify-123",
+    hasAccessToken,
+    hasPhoneNumberId,
+    hasVerifyToken,
+    hasAppSecret,
   });
 }

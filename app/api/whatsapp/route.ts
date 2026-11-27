@@ -86,11 +86,18 @@ export async function GET(request: NextRequest) {
   const challenge = searchParams.get("hub.challenge");
   const requestToken = searchParams.get("hub.verify_token");
 
-  if (verifyToken && mode === "subscribe" && challenge && requestToken === verifyToken) {
+  if (verifyToken && mode === "subscribe" && challenge && verifyWebhookToken(requestToken, verifyToken)) {
     return new NextResponse(challenge, { status: 200 });
   }
 
   return NextResponse.json({ error: "Webhook verification failed" }, { status: 403 });
+}
+
+function verifyWebhookToken(receivedToken: string | null, expectedToken: string): boolean {
+  if (!receivedToken) return false;
+  const received = Buffer.from(receivedToken, "utf8");
+  const expected = Buffer.from(expectedToken, "utf8");
+  return received.length === expected.length && timingSafeEqual(received, expected);
 }
 
 export async function POST(request: NextRequest) {
